@@ -27,9 +27,4 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
-self.registration.showNotification(title, {
-  body: body,
-  icon: "/icon-192.png",
-  badge: "/badge-96.png",
-  ...
-});
+
