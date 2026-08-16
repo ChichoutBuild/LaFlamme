@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Flamme</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B1026">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,6 +21,13 @@
       appId: "2f2c8069-be80-471d-9caf-891c1a1d8cc4",
     });
     OneSignal.Notifications.requestPermission();
+
+    const btn = document.getElementById('notifBtn');
+    if (btn){
+      btn.addEventListener('click', () => {
+        OneSignal.Notifications.requestPermission();
+      });
+    }
   });
 </script>
 <style>
@@ -264,6 +275,12 @@
       <div class="challenge-waiting" id="challengeWaiting"></div>
     </div>
   </section>
+
+  <div style="text-align:center; margin-top:.5rem;">
+    <button id="notifBtn" style="background:transparent; border:1px solid var(--gold-soft); color:var(--gold); font-family:'Manrope',sans-serif; font-size:.8rem; padding:.55rem 1.1rem; border-radius:999px; cursor:pointer;">
+      Activer les notifications
+    </button>
+  </div>
 
 
 </main>
