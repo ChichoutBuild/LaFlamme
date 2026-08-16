@@ -355,7 +355,7 @@
     <div class="challenge-card">
       <span class="challenge-time" id="challengeTime">--:--</span>
       <div id="challengeContainer">
-        <div class="challenge-text" id="challengeText">Défi à préparer ✦</div>
+        <div class="challenge-text" id="challengeText">Défi non disponible...</div>
       </div>
     </div>
   </section>
@@ -421,9 +421,9 @@ function renderCountdown(){
 
   if (diff <= 0){
     if (cachedPoints >= 10){
-      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui. 🤍</div>';
+      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui...</div>';
     } else {
-      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui... la surprise attendra un tout petit peu 👀</div>';
+      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui... la surprise attendra un tout petit peu mais tu n as pas assez de points...</div>';
     }
     return;
   }
@@ -557,7 +557,7 @@ function getCurrentSlot(){
   if (h >= 20 && h < 23) return 'evening';
   return null;
 }
-const WAITING_MESSAGE = "Reviens à 11h ou 20h pour découvrir le prochain défi ✦";
+const WAITING_MESSAGE = "Pas de défi pour le moment...";
 
 /* ============================================================
    DÉFI DU MOMENT
@@ -590,7 +590,7 @@ async function renderChallenge(){
   }
 
   // 2) Sinon, texte simple depuis Supabase (table "challenges")
-  container.innerHTML = '<div class="challenge-text" id="challengeText">Défi à préparer ✦</div>';
+  container.innerHTML = '<div class="challenge-text" id="challengeText">Défi non disponible...</div>';
   const textEl = document.getElementById('challengeText');
 
   try {
@@ -618,7 +618,7 @@ async function renderChallenge(){
     timeEl.textContent = fallbackDay[slotKey].time;
     textEl.textContent = fallbackDay[slotKey].text;
   } else {
-    textEl.textContent = 'Défi à préparer ✦';
+    textEl.textContent = 'Défi non disponible...';
   }
 }
 
