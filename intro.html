@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bienvenue ✦</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-deep:#0B1026;
+  --bg-panel:#141B3C;
+  --line:#2A3366;
+  --text-main:#F5F3ED;
+  --text-soft:#A8B3E8;
+  --gold:#F2C879;
+  --gold-soft:#E8B96A55;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, #1B2456 0%, var(--bg-deep) 60%),
+    var(--bg-deep);
+  color:var(--text-main);
+  font-family:'Manrope',sans-serif;
+  min-height:100vh;
+}
+
+main{
+  max-width:640px;
+  margin:auto;
+  padding:2rem 1rem 4rem;
+}
+
+section{
+  background:linear-gradient(180deg,var(--bg-panel),#101636);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:1.5rem;
+  margin-bottom:1rem;
+}
+
+h1{
+  font-family:'Fraunces',serif;
+  text-align:center;
+  margin-bottom:2rem;
+  font-size:2.2rem;
+}
+
+p{
+  color:var(--text-soft);
+  line-height:1.7;
+  margin-bottom:1rem;
+}
+
+.pdf-link{
+  display:block;
+  text-align:center;
+  padding:1rem;
+  color:var(--gold);
+  text-decoration:none;
+  border:1px solid var(--gold-soft);
+  border-radius:14px;
+}
+
+button{
+  width:100%;
+  border:none;
+  border-radius:999px;
+  background:var(--gold);
+  color:#0B1026;
+  font-weight:700;
+  padding:1rem;
+  cursor:pointer;
+  margin-top:1rem;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+
+<h1>Pour toi ❤️</h1>
+
+<section>
+
+<p>
+Si tu lis ceci, c'est que tu as trouvé ce petit coin que j'ai fabriqué pour nous.
+</p>
+
+<p>
+Je sais que la distance n'est pas toujours simple, alors j'ai essayé de créer quelque chose qui nous accompagnera pendant ces jours où l'on ne peut pas être ensemble.
+</p>
+
+<p>
+Ce n'est peut-être pas parfait, mais chaque détail a été pensé avec beaucoup d'amour.
+</p>
+
+</section>
+
+<section>
+
+<a class="pdf-link" href="/tuto.pdf" target="_blank">
+📄 Ouvrir le guide de l'application
+</a>
+
+</section>
+
+<section>
+
+<p>
+Tu découvriras parfois des défis, parfois des messages, parfois des surprises.
+</p>
+
+<p>
+J'espère simplement que tout cela te donnera le sourire jusqu'à nos retrouvailles.
+</p>
+
+<button id="enterApp">
+Accéder à l'app ✦
+</button>
+
+</section>
+
+</main>
+
+<script>
+
+const SUPABASE_URL = "TON_URL_SUPABASE";
+const SUPABASE_ANON_KEY = "TA_CLE_ANON";
+
+document.getElementById("enterApp").addEventListener("click", async () => {
+
+  await fetch(
+    `${SUPABASE_URL}/rest/v1/app_state?id=eq.1`,
+    {
+      method:"PATCH",
+      headers:{
+        apikey:SUPABASE_ANON_KEY,
+        Authorization:`Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        intro_completed:true,
+        completed_at:new Date().toISOString()
+      })
+    }
+  );
+
+  window.location.href="/index.html";
+});
+
+</script>
+
+</body>
+</html>
