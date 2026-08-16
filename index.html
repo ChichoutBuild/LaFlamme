@@ -391,6 +391,33 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 window.SUPABASE_URL = SUPABASE_URL;
 window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 
+  (async () => {
+
+  try {
+
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/app_state?id=eq.1&select=intro_completed`,
+      {
+        headers:{
+          apikey:SUPABASE_ANON_KEY,
+          Authorization:`Bearer ${SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data[0]?.intro_completed) {
+      window.location.href = "/intro.html";
+      return;
+    }
+
+  } catch(err) {
+    console.error(err);
+  }
+
+})();
+
 /* ============================================================
    CONFIG — dates clés
    ============================================================ */
