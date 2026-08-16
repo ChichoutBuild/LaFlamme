@@ -102,10 +102,8 @@ window.GAMES = {
     type: "flash-image",
     image: "/22m.png",
     question: "Quelle était la couleur de la voiture derrière ?",
-    // TODO (toi) : pas de propositions données -> réponse libre pour l'instant.
-    // Si tu préfères des boutons à choix multiple, ajoute "options: [...]"
-    // comme pour le défi du 18 soir, et mets la bonne réponse ci-dessous.
-    answer: "À COMPLÉTER"
+    options: ["Noire", "Blanche", "Bleue", "Je suis pas raciste"],
+    answer: "Noire"
   }
 
 };
@@ -501,3 +499,28 @@ function renderCodebreaker(container, day, cfg){
     }
   });
 }
+
+/* ============================================================
+   OUTIL DE TEST — à taper dans la console du navigateur
+   Exemple : testGame(11, "morning")
+   Affiche direct le jeu demandé dans la carte "défi du moment",
+   sans avoir à changer les dates ni attendre le bon jour/heure.
+   Les jours vont de 11 (17 août) à 16 (22 août).
+   Les créneaux sont "morning" ou "evening".
+   ============================================================ */
+window.testGame = function(day, slot){
+  slot = (slot === 'evening') ? 'evening' : 'morning';
+  const key = `${day}-${slot}`;
+  const cfg = window.GAMES[key];
+  const container = document.getElementById('challengeContainer');
+  if (!cfg){
+    console.warn(`Aucun jeu configuré pour ${key}. Jours valides : 11 à 16.`);
+    return;
+  }
+  if (!container){
+    console.warn('Élément #challengeContainer introuvable sur cette page.');
+    return;
+  }
+  console.log(`Affichage du jeu : ${key} (${cfg.type})`);
+  window.renderGame(container, day, slot, cfg, false);
+};
