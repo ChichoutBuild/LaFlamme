@@ -20,6 +20,7 @@ window.GAMES = {
 
   "11-morning": {
     time: "11:00",
+    name: "Qui a dit ça ?",
     type: "who-said",
     question: "« J'aurai le droit à un câlin ? »",
     options: ["Toi", "Moi"],
@@ -28,6 +29,7 @@ window.GAMES = {
 
   "11-evening": {
     time: "20:00",
+    name: "Devine qui je suis",
     type: "emoji-guess",
     hint: "Indice : seulement le prénom",
     emojis: "🤪🔨🏠🧑‍🧒‍🧒",
@@ -36,12 +38,14 @@ window.GAMES = {
 
   "12-morning": {
     time: "11:00",
+    name: "Remets la phrase dans l'ordre",
     type: "reorder",
     sentence: "Je veux faire caca dans tes bras pendant un câlin"
   },
 
   "12-evening": {
     time: "20:00",
+    name: "Image mystère",
     type: "flash-image",
     image: "/18s.png",
     question: "De quelle couleur était mon short ?",
@@ -51,12 +55,14 @@ window.GAMES = {
 
   "13-morning": {
     time: "11:00",
+    name: "Envoie ta tenue du jour",
     type: "photo-upload",
     prompt: "Envoie une photo de ta tenue du jour pour valider ce défi ✦"
   },
 
   "13-evening": {
     time: "20:00",
+    name: "Wordle",
     type: "wordle",
     answer: "canard",
     maxAttempts: 10
@@ -64,6 +70,7 @@ window.GAMES = {
 
   "14-morning": {
     time: "11:00",
+    name: "Devine qui je suis",
     type: "emoji-guess",
     hint: "Indice : seulement le prénom",
     emojis: "🥵💪📸",
@@ -72,6 +79,7 @@ window.GAMES = {
 
   "14-evening": {
     time: "20:00",
+    name: "Qui a dit ça ?",
     type: "who-said",
     question: "« Je suis pas une princesse, j'ai pas besoin de prince pour avancer »",
     options: ["Moi 💅", "Toi 😝", "Boris"],
@@ -80,6 +88,7 @@ window.GAMES = {
 
   "15-morning": {
     time: "11:00",
+    name: "Wordle",
     type: "wordle",
     answer: "geraldine", // l'accent n'est pas pris en compte dans la vérification
     maxAttempts: 10
@@ -87,6 +96,7 @@ window.GAMES = {
 
   "15-evening": {
     time: "20:00",
+    name: "Code secret",
     type: "codebreaker",
     secret: "1804",
     clues: [
@@ -99,6 +109,7 @@ window.GAMES = {
 
   "16-morning": {
     time: "11:00",
+    name: "Image mystère",
     type: "flash-image",
     image: "/22m.png",
     question: "Quelle était la couleur de la voiture derrière ?",
@@ -119,6 +130,15 @@ window.renderGame = function(container, day, slot, cfg, alreadyDone){
     return;
   }
 
+  if (cfg.name){
+    const titleEl = document.createElement('div');
+    titleEl.className = 'section-title';
+    titleEl.style.marginBottom = '.7rem';
+    titleEl.style.fontSize = '1rem';
+    titleEl.textContent = cfg.name;
+    container.appendChild(titleEl);
+  }
+
   switch (cfg.type){
     case 'who-said':      renderWhoSaid(container, day, cfg); break;
     case 'emoji-guess':   renderEmojiGuess(container, day, cfg); break;
@@ -131,6 +151,13 @@ window.renderGame = function(container, day, slot, cfg, alreadyDone){
       container.innerHTML = '<div class="challenge-text">Défi à préparer ✦</div>';
   }
 };
+
+/* Marque le défi comme réussi côté Supabase, puis verrouille
+   définitivement la carte avec un message (plus moyen de rejouer). */
+function completeAndLock(container, day){
+  window.markChallengeComplete(day);
+  container.innerHTML = '<div class="challenge-text">✅ Défi réussi, bravo ! Il reste validé ✦</div>';
+}
 
 /* ============================================================
    1) QUI A DIT ÇA — boutons à choix, vert/rouge après confirmation
@@ -174,10 +201,7 @@ function renderWhoSaid(container, day, cfg){
       else if (x.classList.contains('selected')) x.classList.add('wrong');
     });
     if (isCorrect){
-      fb.textContent = '✅ Bravo, défi réussi !';
-      fb.className = 'game-feedback ok';
-      wrap.querySelector('#confirmBtn').disabled = true;
-      window.markChallengeComplete(day);
+      completeAndLock(container, day);
     } else {
       fb.textContent = '❌ Raté, réessaie ✦';
       fb.className = 'game-feedback ko';
@@ -204,10 +228,7 @@ function renderEmojiGuess(container, day, cfg){
   wrap.querySelector('#confirmBtn').addEventListener('click', () => {
     const val = wrap.querySelector('#guessInput').value;
     if (normalize(val) === normalize(cfg.answer)){
-      fb.textContent = '✅ Bravo, défi réussi !';
-      fb.className = 'game-feedback ok';
-      wrap.querySelector('#confirmBtn').disabled = true;
-      window.markChallengeComplete(day);
+      completeAndLock(container, day);
     } else {
       fb.textContent = '❌ Raté, réessaie ✦';
       fb.className = 'game-feedback ko';
@@ -268,10 +289,7 @@ function renderReorder(container, day, cfg){
       }
     });
     if (allCorrect){
-      fb.textContent = '✅ Bravo, défi réussi !';
-      fb.className = 'game-feedback ok';
-      wrap.querySelector('#confirmBtn').disabled = true;
-      window.markChallengeComplete(day);
+      completeAndLock(container, day);
     } else {
       fb.textContent = '❌ Pas encore — touche les mots mal placés (en rouge) pour les redéplacer ✦';
       fb.className = 'game-feedback ko';
@@ -328,10 +346,7 @@ function renderFlashImage(container, day, cfg){
         });
       }
       if (isCorrect){
-        fb.textContent = '✅ Bravo, défi réussi !';
-        fb.className = 'game-feedback ok';
-        wrap.querySelector('#confirmBtn').disabled = true;
-        window.markChallengeComplete(day);
+        completeAndLock(container, day);
       } else {
         fb.textContent = '❌ Raté, réessaie ✦';
         fb.className = 'game-feedback ko';
@@ -354,6 +369,17 @@ function renderPhotoUpload(container, day, cfg){
   `;
   container.appendChild(wrap);
 
+  function extensionFor(file){
+    const map = {
+      'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg',
+      'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heif'
+    };
+    if (map[file.type]) return map[file.type];
+    const parts = (file.name || '').split('.');
+    const ext = parts.length > 1 ? parts.pop().toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+    return ext || 'jpg';
+  }
+
   const fb = wrap.querySelector('#fb');
   wrap.querySelector('#photoInput').addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -361,8 +387,10 @@ function renderPhotoUpload(container, day, cfg){
     fb.textContent = 'Envoi en cours...';
     fb.className = 'game-feedback';
     try {
-      const filename = `day${day}-${Date.now()}-${file.name}`.replace(/\s+/g, '_');
-      const res = await fetch(`${window.SUPABASE_URL}/storage/v1/object/photos/${encodeURIComponent(filename)}`, {
+      // Nom de fichier neutre (ni accents, ni espaces, ni apostrophes)
+      // pour éviter les erreurs 400 de l'API Supabase Storage.
+      const filename = `day${day}-${Date.now()}.${extensionFor(file)}`;
+      const res = await fetch(`${window.SUPABASE_URL}/storage/v1/object/photos/${filename}`, {
         method: 'POST',
         headers: {
           apikey: window.SUPABASE_ANON_KEY,
@@ -372,10 +400,10 @@ function renderPhotoUpload(container, day, cfg){
         body: file
       });
       if (res.ok){
-        fb.textContent = '✅ Photo envoyée, défi réussi !';
-        fb.className = 'game-feedback ok';
-        window.markChallengeComplete(day);
+        completeAndLock(container, day);
       } else {
+        const errText = await res.text().catch(() => '');
+        console.error('Upload photo échoué:', res.status, errText);
         fb.textContent = 'Erreur à l\'envoi, réessaie ✦';
         fb.className = 'game-feedback ko';
       }
@@ -398,6 +426,7 @@ function renderWordle(container, day, cfg){
   const wrap = document.createElement('div');
   wrap.innerHTML = `
     <div class="challenge-text">Devine le mot en ${wordLen} lettres ✦</div>
+    <div class="game-hint">Après chaque essai : vert = bonne lettre, bien placée. Jaune = lettre présente, mais mal placée. Gris = lettre absente du mot.</div>
     <div class="wordle-grid" id="grid"></div>
     <input type="text" class="game-input" id="wordInput" maxlength="${wordLen}" placeholder="Ta réponse (${wordLen} lettres)">
     <button class="game-btn" id="confirmBtn" type="button">Valider</button>
@@ -450,11 +479,7 @@ function renderWordle(container, day, cfg){
     input.value = '';
 
     if (normalize(val) === answer){
-      fb.textContent = '✅ Bravo, défi réussi !';
-      fb.className = 'game-feedback ok';
-      btn.disabled = true;
-      input.disabled = true;
-      window.markChallengeComplete(day);
+      completeAndLock(container, day);
     } else if (attempts.length >= maxAttempts){
       fb.textContent = `❌ Plus d'essais... le mot était « ${cfg.answer} »`;
       fb.className = 'game-feedback ko';
@@ -489,10 +514,7 @@ function renderCodebreaker(container, day, cfg){
   wrap.querySelector('#confirmBtn').addEventListener('click', () => {
     const val = wrap.querySelector('#codeInput').value.trim();
     if (val === cfg.secret){
-      fb.textContent = '✅ Bravo, défi réussi !';
-      fb.className = 'game-feedback ok';
-      wrap.querySelector('#confirmBtn').disabled = true;
-      window.markChallengeComplete(day);
+      completeAndLock(container, day);
     } else {
       fb.textContent = '❌ Raté, réessaie ✦';
       fb.className = 'game-feedback ko';
