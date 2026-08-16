@@ -494,6 +494,31 @@ renderChallenge();
 renderCountdown();
 setInterval(renderCountdown, 1000);
 setInterval(renderChallenge, 60000);
+  window.testNotif = async function(
+  title = "💛 Notification de test",
+  body = "Si tu vois ça, les notifications fonctionnent !"
+){
+  if (Notification.permission !== "granted") {
+    console.error("Notifications non autorisées");
+    return;
+  }
+
+  const registration = await navigator.serviceWorker.getRegistration();
+
+  if (!registration) {
+    console.error("Service Worker introuvable");
+    return;
+  }
+
+  registration.showNotification(title, {
+    body,
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
+    vibrate: [200, 100, 200]
+  });
+
+  console.log("Notification envoyée");
+};
 </script>
 
 </body>
