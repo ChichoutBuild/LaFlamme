@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notre bulle</title>
+<title>La Flamme</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -253,11 +253,16 @@
     </div>
   </section>
 
-  <footer>fait avec 🤍 pendant que tu me manques</footer>
 
 </main>
 
 <script>
+/* ============================================================
+   CONFIG — Supabase
+   ============================================================ */
+const SUPABASE_URL = "https://qfmzroxwpeavupbmavpz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXpyb3h3cGVhdnVwYm1hdnB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODcyNzIsImV4cCI6MjEwMjQ2MzI3Mn0.ThiXBNC07QQONVm9YZyCIMCGnIxf96CE1bmlP6qWWBw";
+
 /* ============================================================
    CONFIG — dates clés
    ============================================================ */
@@ -266,20 +271,14 @@ const END_DATE     = new Date(2026, 7, 22, 18, 0, 0); // samedi 22 août 2026, 1
 const TOTAL_DAYS   = 16; // du 7 au 22 août inclus
 
 /* ============================================================
-   CONFIG — défis
-   Remplace le contenu ci-dessous. Chaque jour peut avoir un défi
-   du matin (11h) et un défi du soir (20h). Clé = numéro du jour
-   (1 = 7 août, 2 = 8 août, ... 16 = 22 août).
-   Idéalement ces données viendront de Supabase plus tard,
-   pour l'instant c'est en dur ici pour la V1 de cette nuit.
+   DÉFIS — repli local si Supabase ne répond pas / table vide
+   pour ce jour. Sert de filet de sécurité.
    ============================================================ */
-const CHALLENGES = {
+const FALLBACK_CHALLENGES = {
   1: {
     morning: { time: "11:00", text: "Défi à préparer ✦" },
     evening: { time: "20:00", text: "Défi à préparer ✦" }
-  },
-  // 2: { morning: {...}, evening: {...} },
-  // ... à compléter pour chaque jour
+  }
 };
 
 /* ============================================================
@@ -346,28 +345,50 @@ function renderDayCounter(){
 
 /* ============================================================
    DÉFI DU MOMENT (matin avant 20h -> défi 11h, sinon défi 20h)
+   Va chercher le texte dans la table Supabase "challenges"
+   (colonnes: day, time_slot ["morning"/"evening"], content).
+   Si rien n'est trouvé (pas encore de contenu ce jour-là),
+   on retombe sur FALLBACK_CHALLENGES puis sur un message par défaut.
    ============================================================ */
-function renderChallenge(){
+async function renderChallenge(){
   const day = dayNumberToday();
   const now = new Date();
   const isEvening = now.getHours() >= 20;
+  const slotKey = isEvening ? 'evening' : 'morning';
+  const defaultTime = isEvening ? '20:00' : '11:00';
 
-  const dayData = CHALLENGES[day];
   const timeEl = document.getElementById('challengeTime');
   const textEl = document.getElementById('challengeText');
-  const waitEl = document.getElementById('challengeWaiting');
 
-  if (!dayData){
-    timeEl.textContent = '--:--';
-    textEl.textContent = 'Défi à préparer ✦';
-    waitEl.textContent = '';
-    return;
+  timeEl.textContent = defaultTime;
+
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/challenges?day=eq.${day}&time_slot=eq.${slotKey}&select=content`;
+    const res = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+
+    if (res.ok){
+      const rows = await res.json();
+      if (rows.length > 0 && rows[0].content){
+        textEl.textContent = rows[0].content;
+        return;
+      }
+    }
+  } catch (err){
+    // pas de réseau / Supabase indisponible -> on utilise le repli local
   }
 
-  const slot = isEvening ? dayData.evening : dayData.morning;
-  timeEl.textContent = slot.time;
-  textEl.textContent = slot.text;
-  waitEl.textContent = '';
+  const fallbackDay = FALLBACK_CHALLENGES[day];
+  if (fallbackDay && fallbackDay[slotKey]){
+    timeEl.textContent = fallbackDay[slotKey].time;
+    textEl.textContent = fallbackDay[slotKey].text;
+  } else {
+    textEl.textContent = 'Défi à préparer ✦';
+  }
 }
 
 /* ============================================================
