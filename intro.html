@@ -7,7 +7,7 @@
 <title>Bienvenue ✦</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -47,11 +47,7 @@ main{
 }
 
 section{
-  background:linear-gradient(
-    180deg,
-    var(--bg-panel),
-    #101636
-  );
+  background:linear-gradient(180deg,var(--bg-panel),#101636);
   border:1px solid var(--line);
   border-radius:20px;
   padding:1.5rem;
@@ -95,7 +91,6 @@ button{
 
 #installBtn{
   width:100%;
-  border:none;
   border-radius:999px;
   background:transparent;
   color:var(--gold);
@@ -103,10 +98,8 @@ button{
   font-weight:600;
   padding:1rem;
   cursor:pointer;
-  display:none;
 }
 </style>
-
 </head>
 
 <body>
@@ -133,11 +126,15 @@ Ce n'est peut-être pas parfait, mais chaque détail a été pensé avec beaucou
 
 <section>
 
-<a class="pdf-link" href="/tuto.pdf" target="_blank">
+<a
+  class="pdf-link"
+  href="/tuto.pdf"
+  target="_blank"
+>
 📄 Ouvrir le guide de l'application
 </a>
 
-<button id="installBtn" style="margin-top:1rem;">
+<button id="installBtn">
 📲 Ajouter l'app à l'écran d'accueil
 </button>
 
@@ -163,67 +160,103 @@ Accéder à l'app ✦
 
 <script>
 
-const SUPABASE_URL = "TON_URL_SUPABASE";
-const SUPABASE_ANON_KEY = "TA_CLE_ANON";
-
-document.getElementById("enterApp").addEventListener("click", async () => {
-
-  await fetch(
-    `${SUPABASE_URL}/rest/v1/app_state?id=eq.1`,
-    {
-      method:"PATCH",
-      headers:{
-        apikey:SUPABASE_ANON_KEY,
-        Authorization:`Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        intro_completed:true,
-        completed_at:new Date().toISOString()
-      })
-    }
-  );
-
-  window.location.href="/index.html";
-});
-
-
-/* Installation de l'application */
+/* =========================
+   INSTALLATION DE L'APP
+========================= */
 
 let deferredPrompt = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
+
   e.preventDefault();
+
   deferredPrompt = e;
 
-  const btn = document.getElementById('installBtn');
-
-  if (btn) {
-    btn.style.display = 'block';
-  }
 });
 
 document.getElementById('installBtn').addEventListener('click', async () => {
 
-  // Android Chrome
+  /* Android Chrome */
+
   if (deferredPrompt) {
+
     deferredPrompt.prompt();
+
     await deferredPrompt.userChoice;
+
     deferredPrompt = null;
+
     return;
   }
 
-  // iPhone / Safari
-  alert(
+  /* iPhone / Safari */
+
+  const isIOS =
+    /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  if (isIOS) {
+
+    alert(
 `Sur iPhone :
 
 1. Appuie sur le bouton Partager
 2. Choisis "Sur l'écran d'accueil"
 3. Valide avec Ajouter`
+    );
+
+    return;
+  }
+
+  /* Autres navigateurs */
+
+  alert(
+`L'installation automatique n'est pas disponible ici.
+
+Ouvre le menu de ton navigateur et cherche "Ajouter à l'écran d'accueil" ou "Installer l'application".`
   );
+
+});
+
+
+/* =========================
+   ACCÉDER À L'APP
+========================= */
+
+const SUPABASE_URL = "TON_URL_SUPABASE";
+const SUPABASE_ANON_KEY = "TA_CLE_ANON";
+
+document.getElementById("enterApp").addEventListener("click", async () => {
+
+  try {
+
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/app_state?id=eq.1`,
+      {
+        method:"PATCH",
+        headers:{
+          apikey:SUPABASE_ANON_KEY,
+          Authorization:`Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          intro_completed:true,
+          completed_at:new Date().toISOString()
+        })
+      }
+    );
+
+  } catch(error) {
+
+    console.error("Erreur Supabase :", error);
+
+  }
+
+  window.location.href="/index.html";
+
 });
 
 </script>
 
 </body>
 </html>
+```
