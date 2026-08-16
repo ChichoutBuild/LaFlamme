@@ -1,0 +1,8 @@
+{
+  "name": "La Flamme",
+  "short_name": "La Flamme",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1026",
+  "theme_color": "#0B1026"
+}
