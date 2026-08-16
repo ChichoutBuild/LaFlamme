@@ -7,7 +7,7 @@
 <title>Bienvenue ✦</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -21,11 +21,19 @@
   --gold-soft:#E8B96A55;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body{
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, #1B2456 0%, var(--bg-deep) 60%),
+    radial-gradient(
+      ellipse 80% 50% at 50% -10%,
+      #1B2456 0%,
+      var(--bg-deep) 60%
+    ),
     var(--bg-deep);
   color:var(--text-main);
   font-family:'Manrope',sans-serif;
@@ -39,7 +47,11 @@ main{
 }
 
 section{
-  background:linear-gradient(180deg,var(--bg-panel),#101636);
+  background:linear-gradient(
+    180deg,
+    var(--bg-panel),
+    #101636
+  );
   border:1px solid var(--line);
   border-radius:20px;
   padding:1.5rem;
@@ -80,7 +92,21 @@ button{
   cursor:pointer;
   margin-top:1rem;
 }
+
+#installBtn{
+  width:100%;
+  border:none;
+  border-radius:999px;
+  background:transparent;
+  color:var(--gold);
+  border:1px solid var(--gold-soft);
+  font-weight:600;
+  padding:1rem;
+  cursor:pointer;
+  display:none;
+}
 </style>
+
 </head>
 
 <body>
@@ -110,6 +136,10 @@ Ce n'est peut-être pas parfait, mais chaque détail a été pensé avec beaucou
 <a class="pdf-link" href="/tuto.pdf" target="_blank">
 📄 Ouvrir le guide de l'application
 </a>
+
+<button id="installBtn" style="margin-top:1rem;">
+📲 Ajouter l'app à l'écran d'accueil
+</button>
 
 </section>
 
@@ -155,6 +185,42 @@ document.getElementById("enterApp").addEventListener("click", async () => {
   );
 
   window.location.href="/index.html";
+});
+
+
+/* Installation de l'application */
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.getElementById('installBtn');
+
+  if (btn) {
+    btn.style.display = 'block';
+  }
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+
+  // Android Chrome
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    return;
+  }
+
+  // iPhone / Safari
+  alert(
+`Sur iPhone :
+
+1. Appuie sur le bouton Partager
+2. Choisis "Sur l'écran d'accueil"
+3. Valide avec Ajouter`
+  );
 });
 
 </script>
