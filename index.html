@@ -223,6 +223,103 @@
     .countdown-grid{gap:.4rem;}
     section{padding:1.4rem 1rem;}
   }
+
+  /* SECTION TITLE ROW + AIDE */
+  .section-title-row{
+    display:flex; align-items:center; justify-content:center; gap:.4rem;
+    margin-bottom:.3rem;
+  }
+  .section-title-row .section-title{ margin-bottom:0; }
+  .help-btn{
+    width:20px; height:20px; border-radius:50%;
+    border:1px solid var(--gold-soft); background:transparent; color:var(--gold);
+    font-size:.7rem; line-height:1; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex:0 0 auto;
+  }
+
+  /* POINTS */
+  .points-badge{
+    text-align:center; font-size:.8rem; color:var(--text-soft);
+    margin-bottom:.9rem;
+  }
+  .points-badge strong{ color:var(--gold); }
+
+  /* MODALE */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(6,8,20,.75);
+    display:none; align-items:center; justify-content:center;
+    z-index:50; padding:1.25rem;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:16px;
+    padding:1.5rem; max-width:420px; max-height:80vh; overflow-y:auto;
+  }
+  .modal-box h3{ font-family:'Fraunces', serif; color:var(--gold); margin-bottom:.75rem; }
+  .modal-box p{ font-size:.85rem; line-height:1.55; color:var(--text-soft); margin-bottom:.6rem; }
+  .modal-close{
+    display:block; margin:1rem auto 0; background:var(--gold); color:#0B1026;
+    border:none; border-radius:999px; padding:.55rem 1.3rem; font-weight:600; cursor:pointer;
+  }
+
+  /* MOTEUR DE MINI-JEUX — styles partagés */
+  .game-hint{ font-size:.8rem; color:var(--text-soft); margin-bottom:.6rem; }
+  .game-options{ display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin:.9rem 0; }
+  .game-opt{
+    padding:.6rem 1rem; border-radius:12px; border:1px solid var(--line);
+    background:rgba(255,255,255,.03); color:var(--text-main); cursor:pointer;
+    font-family:'Manrope', sans-serif; font-size:.9rem;
+  }
+  .game-opt.selected{ border-color:var(--gold); background:rgba(242,200,121,.12); }
+  .game-opt.correct{ border-color:#7CCB8C; background:rgba(124,203,140,.18); color:#B7F0C2; }
+  .game-opt.wrong{ border-color:#E8837B; background:rgba(232,131,123,.18); color:#F5B4AE; }
+  .game-btn{
+    margin-top:.9rem; background:var(--gold); color:#0B1026; border:none;
+    border-radius:999px; padding:.6rem 1.3rem; font-weight:600; cursor:pointer;
+    font-family:'Manrope', sans-serif; font-size:.9rem;
+  }
+  .game-btn:disabled{ opacity:.5; cursor:default; }
+  .game-input{
+    width:100%; padding:.7rem .9rem; border-radius:10px; border:1px solid var(--line);
+    background:rgba(255,255,255,.04); color:var(--text-main); font-size:1rem;
+    text-align:center; margin-top:.5rem; font-family:'Manrope', sans-serif;
+  }
+  .game-feedback{ margin-top:.7rem; font-size:.9rem; min-height:1.2em; }
+  .game-feedback.ok{ color:#7CCB8C; }
+  .game-feedback.ko{ color:#E8837B; }
+  .game-clues{ text-align:left; font-size:.85rem; color:var(--text-soft); margin:.6rem 0; }
+  .game-clues div{ padding:.2rem 0; }
+
+  .reorder-list{
+    display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center;
+    margin:.9rem 0; min-height:48px;
+  }
+  .reorder-card{
+    padding:.5rem .8rem; border-radius:10px; border:1px solid var(--line);
+    background:rgba(255,255,255,.04); cursor:grab; font-size:.9rem; user-select:none;
+  }
+  .reorder-card.correct{ border-color:#7CCB8C; background:rgba(124,203,140,.18); }
+  .reorder-card.wrong{ border-color:#E8837B; background:rgba(232,131,123,.18); }
+  .reorder-card.dragging{ opacity:.4; }
+
+  .wordle-grid{ display:flex; flex-direction:column; gap:5px; align-items:center; margin:.9rem 0; }
+  .wordle-row{ display:flex; gap:5px; }
+  .wordle-cell{
+    width:34px; height:34px; border:1px solid var(--line); border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; text-transform:uppercase; font-size:.95rem;
+  }
+  .wordle-cell.green{ background:#7CCB8C; border-color:#7CCB8C; color:#0B1026; }
+  .wordle-cell.yellow{ background:#E8C879; border-color:#E8C879; color:#0B1026; }
+  .wordle-cell.gray{ background:#2A3366; color:var(--text-soft); }
+
+  .flash-image{ max-width:100%; border-radius:12px; margin:.5rem 0; display:block; }
+
+  .photo-input-label{
+    display:inline-block; background:transparent; border:1px dashed var(--gold-soft);
+    color:var(--gold); padding:.7rem 1.1rem; border-radius:12px; cursor:pointer; font-size:.9rem;
+  }
 </style>
 </head>
 <body>
@@ -250,13 +347,31 @@
 
   <!-- DÉFI DU JOUR -->
   <section>
-    <div class="section-title">Le défi du moment</div>
+    <div class="section-title-row">
+      <div class="section-title">Le défi du moment</div>
+      <button class="help-btn" id="rulesBtn" aria-label="Voir les règles" type="button">?</button>
+    </div>
+    <div class="points-badge" id="pointsBadge">🏆 <strong>0</strong> / 11 défis réussis</div>
     <div class="challenge-card">
       <span class="challenge-time" id="challengeTime">--:--</span>
-      <div class="challenge-text" id="challengeText">Défi à préparer ✦</div>
-      <div class="challenge-waiting" id="challengeWaiting"></div>
+      <div id="challengeContainer">
+        <div class="challenge-text" id="challengeText">Défi à préparer ✦</div>
+      </div>
     </div>
   </section>
+
+  <!-- MODALE RÈGLES -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal-box">
+      <h3>Règles du jeu ✦</h3>
+      <p>Chaque jour, deux défis apparaissent ici : un le matin, un le soir. Ouvre la page à ce moment-là pour le découvrir.</p>
+      <p>À partir du 17 août, certains défis sont des mini-jeux spéciaux. Chacun réussi te rapporte 1 point, sur 11 au total.</p>
+      <p>Il te faut au moins 10 points sur 11 pour débloquer la grosse surprise du 22 août à 18h — tu as donc le droit d'en louper un seul.</p>
+      <p>Sur (presque) tous les défis, tu as un nombre d'essais illimité : prends ton temps, réfléchis, amuse-toi.</p>
+      <p>Un défi réussi reste acquis, pas besoin de le refaire.</p>
+      <button class="modal-close" id="rulesClose" type="button">Compris ✦</button>
+    </div>
+  </div>
 
   <div style="text-align:center; margin-top:.5rem;">
     <button id="notifBtn" style="background:transparent; border:1px solid var(--gold-soft); color:var(--gold); font-family:'Manrope',sans-serif; font-size:.8rem; padding:.55rem 1.1rem; border-radius:999px; cursor:pointer;">
@@ -269,10 +384,12 @@
 
 <script>
 /* ============================================================
-   CONFIG — Supabase
+   CONFIG — Supabase (exposée sur window pour games.js)
    ============================================================ */
 const SUPABASE_URL = "https://qfmzroxwpeavupbmavpz.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbXpyb3h3cGVhdnVwYm1hdnB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODcyNzIsImV4cCI6MjEwMjQ2MzI3Mn0.ThiXBNC07QQONVm9YZyCIMCGnIxf96CE1bmlP6qWWBw";
+window.SUPABASE_URL = SUPABASE_URL;
+window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 
 /* ============================================================
    CONFIG — dates clés
@@ -303,7 +420,11 @@ function renderCountdown(){
   const diff = END_DATE - now;
 
   if (diff <= 0){
-    el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui. 🤍</div>';
+    if (cachedPoints >= 10){
+      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui. 🤍</div>';
+    } else {
+      el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui... la surprise attendra un tout petit peu 👀</div>';
+    }
     return;
   }
 
@@ -329,6 +450,76 @@ function dayNumberToday(){
   const diffDays = Math.floor((now - startMidnight) / 86400000) + 1;
   return Math.min(Math.max(diffDays, 1), TOTAL_DAYS);
 }
+window.dayNumberToday = dayNumberToday;
+
+/* ============================================================
+   POINTS — table Supabase "progress" (day, created_at)
+   Un défi réussi = une ligne. On compte le nombre de lignes.
+   ============================================================ */
+const TOTAL_GAME_CHALLENGES = 11;
+let cachedPoints = 0;
+
+async function refreshPoints(){
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/progress?select=day`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if (res.ok){
+      const rows = await res.json();
+      cachedPoints = Array.isArray(rows) ? rows.length : 0;
+    }
+  } catch (e){ /* on garde la dernière valeur connue */ }
+
+  const badge = document.getElementById('pointsBadge');
+  if (badge){
+    badge.innerHTML = `🏆 <strong>${cachedPoints}</strong> / ${TOTAL_GAME_CHALLENGES} défis réussis`;
+  }
+}
+window.refreshPoints = refreshPoints;
+
+async function markChallengeComplete(day){
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/progress`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ day })
+    });
+  } catch (e){ /* silencieux, on retentera au prochain chargement */ }
+  refreshPoints();
+}
+window.markChallengeComplete = markChallengeComplete;
+
+async function isChallengeDone(day){
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/progress?day=eq.${day}&select=day`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if (res.ok){
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length > 0;
+    }
+  } catch (e){ /* on suppose que non */ }
+  return false;
+}
+window.isChallengeDone = isChallengeDone;
+</script>
+
+<!-- games.js a besoin de SUPABASE_URL / SUPABASE_ANON_KEY (définis ci-dessus) -->
+<script src="/games.js"></script>
+
+<script>
+
 
 function renderDayCounter(){
   const day = dayNumberToday();
@@ -369,9 +560,22 @@ async function renderChallenge(){
   const defaultTime = isEvening ? '20:00' : '11:00';
 
   const timeEl = document.getElementById('challengeTime');
-  const textEl = document.getElementById('challengeText');
+  const container = document.getElementById('challengeContainer');
 
   timeEl.textContent = defaultTime;
+
+  // 1) Mini-jeu spécial pour ce jour/créneau ?
+  const gameKey = `${day}-${slotKey}`;
+  if (window.GAMES && window.GAMES[gameKey] && window.renderGame){
+    if (window.GAMES[gameKey].time) timeEl.textContent = window.GAMES[gameKey].time;
+    const alreadyDone = await window.isChallengeDone ? await window.isChallengeDone(day) : false;
+    window.renderGame(container, day, slotKey, window.GAMES[gameKey], alreadyDone);
+    return;
+  }
+
+  // 2) Sinon, texte simple depuis Supabase (table "challenges")
+  container.innerHTML = '<div class="challenge-text" id="challengeText">Défi à préparer ✦</div>';
+  const textEl = document.getElementById('challengeText');
 
   try {
     const url = `${SUPABASE_URL}/rest/v1/challenges?day=eq.${day}&time_slot=eq.${slotKey}&select=content`;
@@ -483,6 +687,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btn){
     btn.addEventListener('click', subscribeToPush);
   }
+
+  const rulesBtn = document.getElementById('rulesBtn');
+  const rulesModal = document.getElementById('rulesModal');
+  const rulesClose = document.getElementById('rulesClose');
+  if (rulesBtn && rulesModal && rulesClose){
+    rulesBtn.addEventListener('click', () => rulesModal.classList.add('open'));
+    rulesClose.addEventListener('click', () => rulesModal.classList.remove('open'));
+    rulesModal.addEventListener('click', (e) => {
+      if (e.target === rulesModal) rulesModal.classList.remove('open');
+    });
+  }
 });
 
 /* ============================================================
@@ -492,33 +707,10 @@ renderStars();
 renderDayCounter();
 renderChallenge();
 renderCountdown();
+refreshPoints();
 setInterval(renderCountdown, 1000);
 setInterval(renderChallenge, 60000);
-  window.testNotif = async function(
-  title = " Notification de test",
-  body = "Je peux mettre ce que je veux ?"
-){
-  if (Notification.permission !== "granted") {
-    console.error("Notifications non autorisées");
-    return;
-  }
-
-  const registration = await navigator.serviceWorker.getRegistration();
-
-  if (!registration) {
-    console.error("Service Worker introuvable");
-    return;
-  }
-
-  registration.showNotification(title, {
-    body,
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
-    vibrate: [200, 100, 200]
-  });
-
-  console.log("Notification envoyée");
-};
+setInterval(refreshPoints, 60000);
 </script>
 
 </body>
