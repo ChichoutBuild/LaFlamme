@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notre bulle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B1026;
+    --bg-panel:#141B3C;
+    --line:#2A3366;
+    --text-main:#F5F3ED;
+    --text-soft:#A8B3E8;
+    --gold:#F2C879;
+    --gold-soft:#E8B96A55;
+    --blush:#F4A6A6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, #1B2456 0%, var(--bg-deep) 60%),
+      var(--bg-deep);
+    color:var(--text-main);
+    font-family:'Manrope', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* Starfield */
+  #stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+  }
+  .star{
+    position:absolute; background:#fff; border-radius:50%;
+    animation:twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:.15;}
+    50%{opacity:.9;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .star{animation:none; opacity:.4;}
+  }
+
+  main{
+    position:relative; z-index:1;
+    max-width:640px;
+    margin:0 auto;
+    padding:2.5rem 1.25rem 4rem;
+  }
+
+  /* HEADER */
+  header{
+    text-align:center;
+    margin-bottom:2.25rem;
+  }
+  .eyebrow{
+    font-size:.7rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--text-soft);
+    margin-bottom:.6rem;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(1.9rem, 6vw, 2.75rem);
+    line-height:1.15;
+    background:linear-gradient(180deg, #FFFFFF 0%, var(--text-soft) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  section{
+    background:linear-gradient(180deg, var(--bg-panel) 0%, #101636 100%);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:1.75rem 1.5rem;
+    margin-bottom:1.25rem;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,.6);
+  }
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-size:1.15rem;
+    font-weight:500;
+    color:var(--gold);
+    text-align:center;
+    margin-bottom:1.1rem;
+  }
+
+  /* COUNTDOWN */
+  .countdown-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:.6rem;
+  }
+  .cd-cell{
+    text-align:center;
+    background:rgba(242,200,121,.06);
+    border:1px solid var(--gold-soft);
+    border-radius:14px;
+    padding:.75rem .25rem;
+  }
+  .cd-num{
+    font-family:'Fraunces', serif;
+    font-size:clamp(1.4rem, 6vw, 2rem);
+    color:var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-size:.65rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-soft);
+    margin-top:.15rem;
+  }
+  .cd-done{
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-size:1.3rem;
+    color:var(--gold);
+    padding:.5rem 0;
+  }
+
+  /* DAY COUNTER / MOON PATH */
+  .day-count-text{
+    text-align:center;
+    font-size:1rem;
+    color:var(--text-soft);
+    margin-bottom:1.1rem;
+  }
+  .day-count-text strong{
+    color:var(--text-main);
+    font-family:'Fraunces', serif;
+    font-size:1.2rem;
+  }
+  .moon-path{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    overflow-x:auto;
+    padding:.5rem .1rem 1rem;
+    scrollbar-width:thin;
+  }
+  .moon-path::-webkit-scrollbar{height:4px;}
+  .moon-path::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+  .night-dot{
+    flex:0 0 auto;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:var(--line);
+    position:relative;
+  }
+  .night-dot.past{
+    background:var(--text-soft);
+  }
+  .night-dot.today{
+    background:var(--gold);
+    width:20px; height:20px;
+    box-shadow:0 0 0 4px var(--gold-soft), 0 0 14px var(--gold);
+  }
+  .night-dot.future{
+    background:var(--line);
+  }
+  .path-line{
+    flex:1;
+    height:1px;
+    background:var(--line);
+    min-width:6px;
+  }
+
+  /* CHALLENGE */
+  .challenge-card{
+    background:rgba(244,166,166,.06);
+    border:1px solid #F4A6A655;
+    border-radius:16px;
+    padding:1.4rem 1.2rem;
+    text-align:center;
+  }
+  .challenge-time{
+    display:inline-block;
+    font-size:.7rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--blush);
+    border:1px solid #F4A6A655;
+    border-radius:999px;
+    padding:.25rem .75rem;
+    margin-bottom:.85rem;
+  }
+  .challenge-text{
+    font-family:'Fraunces', serif;
+    font-size:1.15rem;
+    line-height:1.5;
+    color:var(--text-main);
+  }
+  .challenge-waiting{
+    color:var(--text-soft);
+    font-size:.9rem;
+    margin-top:.6rem;
+  }
+
+  footer{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--text-soft);
+    opacity:.6;
+    margin-top:2rem;
+  }
+
+  @media (max-width:400px){
+    .countdown-grid{gap:.4rem;}
+    section{padding:1.4rem 1rem;}
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<main>
+
+  <header>
+    <div class="eyebrow">Pour toi</div>
+    <h1>De quoi entretenir la flamme ✦</h1>
+  </header>
+
+  <!-- COMPTE À REBOURS -->
+  <section>
+    <div class="section-title">Je rentre chez moiii, grosse surprise !</div>
+    <div id="countdown" class="countdown-grid" aria-live="polite"></div>
+  </section>
+
+  <!-- JOURS SANS SE VOIR -->
+  <section>
+    <div class="day-count-text" id="dayCountText"></div>
+    <div class="moon-path" id="moonPath" aria-hidden="true"></div>
+  </section>
+
+  <!-- DÉFI DU JOUR -->
+  <section>
+    <div class="section-title">Le défi du moment</div>
+    <div class="challenge-card">
+      <span class="challenge-time" id="challengeTime">--:--</span>
+      <div class="challenge-text" id="challengeText">Défi à préparer ✦</div>
+      <div class="challenge-waiting" id="challengeWaiting"></div>
+    </div>
+  </section>
+
+  <footer>fait avec 🤍 pendant que tu me manques</footer>
+
+</main>
+
+<script>
+/* ============================================================
+   CONFIG — dates clés
+   ============================================================ */
+const START_DATE   = new Date(2026, 7, 7, 0, 0, 0);   // vendredi 7 août 2026 = jour 1
+const END_DATE     = new Date(2026, 7, 22, 18, 0, 0); // samedi 22 août 2026, 18h00 = retrouvailles
+const TOTAL_DAYS   = 16; // du 7 au 22 août inclus
+
+/* ============================================================
+   CONFIG — défis
+   Remplace le contenu ci-dessous. Chaque jour peut avoir un défi
+   du matin (11h) et un défi du soir (20h). Clé = numéro du jour
+   (1 = 7 août, 2 = 8 août, ... 16 = 22 août).
+   Idéalement ces données viendront de Supabase plus tard,
+   pour l'instant c'est en dur ici pour la V1 de cette nuit.
+   ============================================================ */
+const CHALLENGES = {
+  1: {
+    morning: { time: "11:00", text: "Défi à préparer ✦" },
+    evening: { time: "20:00", text: "Défi à préparer ✦" }
+  },
+  // 2: { morning: {...}, evening: {...} },
+  // ... à compléter pour chaque jour
+};
+
+/* ============================================================
+   COMPTE À REBOURS
+   ============================================================ */
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function renderCountdown(){
+  const el = document.getElementById('countdown');
+  const now = new Date();
+  const diff = END_DATE - now;
+
+  if (diff <= 0){
+    el.innerHTML = '<div class="cd-done">C\'est aujourd\'hui. 🤍</div>';
+    return;
+  }
+
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  const secs  = Math.floor((diff % 60000) / 1000);
+
+  el.innerHTML = `
+    <div class="cd-cell"><div class="cd-num">${days}</div><div class="cd-label">jours</div></div>
+    <div class="cd-cell"><div class="cd-num">${pad(hours)}</div><div class="cd-label">heures</div></div>
+    <div class="cd-cell"><div class="cd-num">${pad(mins)}</div><div class="cd-label">min</div></div>
+    <div class="cd-cell"><div class="cd-num">${pad(secs)}</div><div class="cd-label">sec</div></div>
+  `;
+}
+
+/* ============================================================
+   JOURS SANS SE VOIR + CHEMIN DE NUITS
+   ============================================================ */
+function dayNumberToday(){
+  const now = new Date();
+  const startMidnight = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate());
+  const diffDays = Math.floor((now - startMidnight) / 86400000) + 1;
+  return Math.min(Math.max(diffDays, 1), TOTAL_DAYS);
+}
+
+function renderDayCounter(){
+  const day = dayNumberToday();
+  document.getElementById('dayCountText').innerHTML =
+    `Jour <strong>${day}</strong> / ${TOTAL_DAYS} où on s'est pas vus`;
+
+  const path = document.getElementById('moonPath');
+  path.innerHTML = '';
+  for (let i = 1; i <= TOTAL_DAYS; i++){
+    const dot = document.createElement('div');
+    dot.className = 'night-dot ' + (i < day ? 'past' : i === day ? 'today' : 'future');
+    path.appendChild(dot);
+    if (i < TOTAL_DAYS){
+      const line = document.createElement('div');
+      line.className = 'path-line';
+      path.appendChild(line);
+    }
+  }
+  // scroll auto jusqu'au jour actuel
+  requestAnimationFrame(() => {
+    const todayDot = path.querySelector('.today');
+    if (todayDot) todayDot.scrollIntoView({inline:'center', block:'nearest'});
+  });
+}
+
+/* ============================================================
+   DÉFI DU MOMENT (matin avant 20h -> défi 11h, sinon défi 20h)
+   ============================================================ */
+function renderChallenge(){
+  const day = dayNumberToday();
+  const now = new Date();
+  const isEvening = now.getHours() >= 20;
+
+  const dayData = CHALLENGES[day];
+  const timeEl = document.getElementById('challengeTime');
+  const textEl = document.getElementById('challengeText');
+  const waitEl = document.getElementById('challengeWaiting');
+
+  if (!dayData){
+    timeEl.textContent = '--:--';
+    textEl.textContent = 'Défi à préparer ✦';
+    waitEl.textContent = '';
+    return;
+  }
+
+  const slot = isEvening ? dayData.evening : dayData.morning;
+  timeEl.textContent = slot.time;
+  textEl.textContent = slot.text;
+  waitEl.textContent = '';
+}
+
+/* ============================================================
+   STARFIELD (décoratif, léger)
+   ============================================================ */
+function renderStars(){
+  const container = document.getElementById('stars');
+  const count = window.innerWidth < 480 ? 45 : 80;
+  for (let i = 0; i < count; i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 1.6 + 0.6;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = Math.random() * 100 + 'vh';
+    s.style.animationDelay = (Math.random() * 4) + 's';
+    container.appendChild(s);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderStars();
+renderDayCounter();
+renderChallenge();
+renderCountdown();
+setInterval(renderCountdown, 1000);
+setInterval(renderChallenge, 60000);
+</script>
+
+</body>
+</html>
